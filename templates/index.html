@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор заявки на научный проект</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .form-container {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto 0;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        .flash-messages {
+            margin: 20px 0;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Генератор заявки на научный проект</h1>
+            <p>Заполните форму для автоматического создания документа заявки</p>
+        </div>
+        
+        <div class="form-container">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for message in messages %}
+                            <div class="alert alert-danger">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" action="/generate">
+                <div class="section">
+                    <h2>📝 Общая информация по проекту</h2>
+                    
+                    <div class="form-group">
+                        <label for="project_name">Название проекта</label>
+                        <input type="text" id="project_name" name="project_name" required
+                               placeholder="Введите название научного проекта">
+                    </div>
+                    
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="key_words">Ключевые слова</label>
+                            <input type="text" id="key_words" name="key_words" required
+                                   placeholder="Ключевые слова через запятую">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="sience_field">Область науки</label>
+                            <input type="text" id="sience_field" name="sience_field" required
+                                   placeholder="Укажите область науки">
+                        </div>
+                    </div>
+                    
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="research_direction">Направление исследования</label>
+                            <select id="research_direction" name="research_direction" required>
+                                <option value="">Выберите направление</option>
+                                <option value="Прикладное">Прикладное</option>
+                                <option value="Фундаментальное">Фундаментальное</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="project_category">Категория проекта</label>
+                            <select id="project_category" name="project_category" required>
+                                <option value="">Выберите категорию</option>
+                                <option value="А">А</option>
+                                <option value="Б">Б</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>📄 Аннотация проекта</h2>
+                    
+                    <div class="form-group">
+                        <label for="project_annotation">Аннотация проекта</label>
+                        <textarea id="project_annotation" name="project_annotation" required 
+                                  maxlength="500" placeholder="Краткое описание проекта (до 500 символов)"
+                                  oninput="updateCharCounter(this, 'annotation-counter')"></textarea>
+                        <div class="char-counter">
+                            <span id="annotation-counter">0</span>/500 символов
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name_of_np">Название предполагаемого принимающего (ОУП) или (НП) подразделения РУДН</label>
+                        <input type="text" id="name_of_np" name="name_of_np" required
+                               placeholder="Название подразделения РУДН">
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>👥 Личные данные</h2>
+                    
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="head_of_project">Руководитель проекта (ФИО)</label>
+                            <input type="text" id="head_of_project" name="head_of_project" required
+                                   placeholder="Фамилия Имя Отчество">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="head_of_np">Руководитель ОУП / НП (ФИО)</label>
+                            <input type="text" id="head_of_np" name="head_of_np" required
+                                   placeholder="Фамилия Имя Отчество">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date">Дата</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    🚀 Создать документ заявки
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function updateCharCounter(textarea, counterId) {
+            const counter = document.getElementById(counterId);
+            const currentLength = textarea.value.length;
+            counter.textContent = currentLength;
+            
+            if (currentLength > textarea.maxLength * 0.9) {
+                counter.style.color = '#e74c3c';
+            } else if (currentLength > textarea.maxLength * 0.75) {
+                counter.style.color = '#f39c12';
+            } else {
+                counter.style.color = '#666';
+            }
+        }
+        
+        // Инициализация счетчика символов
+        document.addEventListener('DOMContentLoaded', function() {
+            const textarea = document.getElementById('project_annotation');
+            updateCharCounter(textarea, 'annotation-counter');
+        });
+    </script>
+</body>
+</html>
