@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Генератор заявки на научный проект</title>
+    
+    <!-- JavaScript библиотеки для работы с .docx файлами -->
+    <script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip.js"></script>
+    <script src="https://unpkg.com/docxtemplater@3.42.0/build/docxtemplater.js"></script>
+    <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -125,7 +130,7 @@
             box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
         }
         
-        .flash-messages {
+        .status-messages {
             margin: 20px 0;
         }
         
@@ -133,12 +138,45 @@
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
+            display: none;
         }
         
         .alert-danger {
             background: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-info {
+            background: #cce7ff;
+            color: #004085;
+            border: 1px solid #b3d7ff;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .two-column {
@@ -162,17 +200,16 @@
         </div>
         
         <div class="form-container">
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <div class="flash-messages">
-                        {% for message in messages %}
-                            <div class="alert alert-danger">{{ message }}</div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% endwith %}
+            <div class="status-messages">
+                <div id="loading-alert" class="alert alert-info loading">
+                    <div class="spinner"></div>
+                    <div id="loading-text">Загружается шаблон документа...</div>
+                </div>
+                <div id="success-alert" class="alert alert-success"></div>
+                <div id="error-alert" class="alert alert-danger"></div>
+            </div>
             
-            <form method="POST" action="/generate">
+            <form id="document-form">
                 <div class="section">
                     <h2>📝 Общая информация по проекту</h2>
                     
@@ -260,7 +297,7 @@
                     </div>
                 </div>
                 
-                <button type="submit" class="submit-btn">
+                <button type="button" id="generate-btn" class="submit-btn" onclick="generateDocument()">
                     🚀 Создать документ заявки
                 </button>
             </form>
@@ -268,6 +305,60 @@
     </div>
     
     <script>
+        let templateBuffer = null;
+
+        function showMessage(type, message) {
+            // Скрываем все сообщения
+            document.querySelectorAll('.alert').forEach(alert => alert.style.display = 'none');
+            
+            // Показываем нужное сообщение
+            const alert = document.getElementById(`${type}-alert`);
+            alert.textContent = message;
+            alert.style.display = 'block';
+        }
+
+        function showLoading(message) {
+            document.getElementById('loading-text').textContent = message;
+            document.getElementById('loading-alert').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-alert').style.display = 'none';
+        }
+
+        async function loadTemplate() {
+            try {
+                // Проверяем, есть ли шаблон в localStorage
+                const storedTemplate = localStorage.getItem('docx-template');
+                if (storedTemplate) {
+                    templateBuffer = Uint8Array.from(atob(storedTemplate), c => c.charCodeAt(0));
+                    showMessage('success', 'Шаблон загружен из кэша. Готов к работе!');
+                    return;
+                }
+
+                showLoading('Загружается шаблон документа...');
+                
+                const response = await fetch('/template.docx');
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить шаблон');
+                }
+                
+                const arrayBuffer = await response.arrayBuffer();
+                templateBuffer = new Uint8Array(arrayBuffer);
+                
+                // Сохраняем в localStorage для следующих использований
+                const base64Template = btoa(String.fromCharCode(...templateBuffer));
+                localStorage.setItem('docx-template', base64Template);
+                
+                hideLoading();
+                showMessage('success', 'Шаблон успешно загружен! Готов к работе.');
+                
+            } catch (error) {
+                hideLoading();
+                showMessage('error', `Ошибка загрузки шаблона: ${error.message}`);
+            }
+        }
+
         function updateCharCounter(textarea, counterId) {
             const counter = document.getElementById(counterId);
             const currentLength = textarea.value.length;
@@ -281,11 +372,113 @@
                 counter.style.color = '#666';
             }
         }
-        
-        // Инициализация счетчика символов
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+                           'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+            
+            return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}г.`;
+        }
+
+        function validateForm() {
+            const requiredFields = [
+                'project_name', 'key_words', 'sience_field', 'research_direction',
+                'project_category', 'project_annotation', 'name_of_np', 
+                'head_of_project', 'head_of_np', 'date'
+            ];
+            
+            const missingFields = [];
+            
+            for (const fieldName of requiredFields) {
+                const field = document.getElementById(fieldName);
+                if (!field.value.trim()) {
+                    missingFields.push(field.previousElementSibling.textContent);
+                }
+            }
+            
+            if (missingFields.length > 0) {
+                showMessage('error', `Пожалуйста, заполните обязательные поля: ${missingFields.join(', ')}`);
+                return false;
+            }
+            
+            return true;
+        }
+
+        async function generateDocument() {
+            if (!templateBuffer) {
+                showMessage('error', 'Шаблон не загружен. Перезагрузите страницу.');
+                return;
+            }
+
+            if (!validateForm()) {
+                return;
+            }
+
+            try {
+                showLoading('Создается документ...');
+                
+                // Получаем данные из формы
+                const formData = {};
+                const form = document.getElementById('document-form');
+                const formElements = form.querySelectorAll('input, textarea, select');
+                
+                formElements.forEach(element => {
+                    if (element.name) {
+                        if (element.name === 'date') {
+                            formData[element.name] = formatDate(element.value);
+                        } else {
+                            formData[element.name] = element.value.trim();
+                        }
+                    }
+                });
+
+                // Создаем новый ZIP архив из шаблона
+                const zip = new PizZip(templateBuffer);
+                
+                // Создаем docxtemplater
+                const doc = new window.docxtemplater(zip, {
+                    paragraphLoop: true,
+                    linebreaks: true,
+                });
+                
+                // Заменяем плейсхолдеры
+                doc.setData(formData);
+                
+                try {
+                    doc.render();
+                } catch (error) {
+                    throw new Error(`Ошибка при замене данных в документе: ${error.message}`);
+                }
+                
+                // Получаем готовый документ
+                const output = doc.getZip().generate({
+                    type: 'blob',
+                    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                });
+                
+                // Скачиваем файл
+                const filename = `Заявка ${formData.project_name}.docx`;
+                saveAs(output, filename);
+                
+                hideLoading();
+                showMessage('success', `Документ "${filename}" успешно создан и скачан!`);
+                
+            } catch (error) {
+                hideLoading();
+                showMessage('error', `Ошибка создания документа: ${error.message}`);
+                console.error('Детали ошибки:', error);
+            }
+        }
+
+        // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация счетчика символов
             const textarea = document.getElementById('project_annotation');
             updateCharCounter(textarea, 'annotation-counter');
+            
+            // Загружаем шаблон
+            loadTemplate();
         });
     </script>
 </body>
