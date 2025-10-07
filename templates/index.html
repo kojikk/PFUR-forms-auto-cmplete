@@ -227,7 +227,7 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="sience_field">Область науки</label>
+                            <label for="sience_field">Область науки (OCED, Приоритетное направление СНТР, ГРНТИ)</label>
                             <input type="text" id="sience_field" name="sience_field" required
                                    placeholder="Укажите область науки">
                         </div>
@@ -255,7 +255,7 @@
                 </div>
                 
                 <div class="section">
-                    <h2>📄 Аннотация проекта</h2>
+                    <h2>📄 Описание проекта</h2>
                     
                     <div class="form-group">
                         <label for="project_annotation">Аннотация проекта</label>
@@ -268,9 +268,101 @@
                     </div>
                     
                     <div class="form-group">
+                        <label for="project_objective">Объект проекта (для Формы 2)</label>
+                        <input type="text" id="project_objective" name="project_objective"
+                               placeholder="Укажите объект исследования">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="project_goal">Цель проекта</label>
+                        <textarea id="project_goal" name="project_goal" 
+                                  maxlength="500" placeholder="Цель проекта (не более 500 символов)"
+                                  oninput="updateCharCounter(this, 'goal-counter')"></textarea>
+                        <div class="char-counter">
+                            <span id="goal-counter">0</span>/500 символов
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="project_tasks">Задачи проекта</label>
+                        <textarea id="project_tasks" name="project_tasks" 
+                                  maxlength="500" placeholder="Задачи проекта (не более 500 символов)"
+                                  oninput="updateCharCounter(this, 'tasks-counter')"></textarea>
+                        <div class="char-counter">
+                            <span id="tasks-counter">0</span>/500 символов
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="research_description">Описание научного исследования</label>
+                        <textarea id="research_description" name="research_description" 
+                                  maxlength="10000" placeholder="Подробное описание исследования: актуальность, адекватность современному состоянию науки, возможность получения новых результатов (не более 10000 символов)"
+                                  oninput="updateCharCounter(this, 'research-counter')"></textarea>
+                        <div class="char-counter">
+                            <span id="research-counter">0</span>/10000 символов
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="scientific_methods_description">Описание научных подходов и методов</label>
+                        <textarea id="scientific_methods_description" name="scientific_methods_description" 
+                                  maxlength="5000" placeholder="Описание методов для решения поставленных задач (не более 5000 символов)"
+                                  oninput="updateCharCounter(this, 'methods-counter')"></textarea>
+                        <div class="char-counter">
+                            <span id="methods-counter">0</span>/5000 символов
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="project_background_description">Научный задел по проекту</label>
+                        <textarea id="project_background_description" name="project_background_description" 
+                                  maxlength="5000" placeholder="Описание научного задела и связанных результатов, включая литературные источники (не более 5000 символов)"
+                                  oninput="updateCharCounter(this, 'background-counter')"></textarea>
+                        <div class="char-counter">
+                            <span id="background-counter">0</span>/5000 символов
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="expected_results">Ожидаемые результаты научного исследования</label>
+                        <textarea id="expected_results" name="expected_results" 
+                                  maxlength="5000" placeholder="Планируемые конкретные научные результаты с разделением по этапам (не более 5000 символов)"
+                                  oninput="updateCharCounter(this, 'results-counter')"></textarea>
+                        <div class="char-counter">
+                            <span id="results-counter">0</span>/5000 символов
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="content_of_work">Состав и содержание работ по проекту</label>
+                        <textarea id="content_of_work" name="content_of_work" 
+                                  maxlength="5000" placeholder="Описание плана работ и обоснование финансирования (не более 5000 символов)"
+                                  oninput="updateCharCounter(this, 'work-counter')"></textarea>
+                        <div class="char-counter">
+                            <span id="work-counter">0</span>/5000 символов
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="equipment">Требуемое оборудование и материалы</label>
+                        <textarea id="equipment" name="equipment" 
+                                  placeholder="Перечень оборудования с ориентировочной стоимостью и планом закупки"></textarea>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>🏢 Подразделение РУДН</h2>
+                    
+                    <div class="form-group">
                         <label for="name_of_np">Название предполагаемого принимающего (ОУП) или (НП) подразделения РУДН</label>
                         <input type="text" id="name_of_np" name="name_of_np" required
                                placeholder="Название подразделения РУДН">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="full_name_of_np">ФИО руководителя подразделения РУДН</label>
+                        <input type="text" id="full_name_of_np" name="full_name_of_np"
+                               placeholder="ФИО руководителя ОУП или НП (если известно)">
                     </div>
                 </div>
                 
@@ -292,8 +384,50 @@
                     </div>
                     
                     <div class="form-group">
+                        <label for="head_of_project_qualifications">Квалификация руководителя проекта</label>
+                        <textarea id="head_of_project_qualifications" name="head_of_project_qualifications" 
+                                  placeholder="Образование, ученая степень, звание, опыт работы, публикации, патенты, опыт руководства НИР/НИОКР"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
                         <label for="date">Дата</label>
                         <input type="date" id="date" name="date" required>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>🏛️ Информация об организации (для гарантийного письма)</h2>
+                    
+                    <div class="form-group">
+                        <label for="organization_name">Наименование организации</label>
+                        <input type="text" id="organization_name" name="organization_name"
+                               placeholder="Полное название организации">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="organization_info">Сведения об организации</label>
+                        <textarea id="organization_info" name="organization_info" 
+                                  placeholder="ИНН, ОГРН, КПП, юридический и почтовый адрес, телефон, деятельность в соответствии с ОКВЭД"></textarea>
+                    </div>
+                    
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="head_of_organization">Руководитель организации (ФИО)</label>
+                            <input type="text" id="head_of_organization" name="head_of_organization"
+                                   placeholder="Фамилия Имя Отчество">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="main_accountant_of_organization">Главный бухгалтер организации (ФИО)</label>
+                            <input type="text" id="main_accountant_of_organization" name="main_accountant_of_organization"
+                                   placeholder="Фамилия Имя Отчество">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="position">Должность</label>
+                        <input type="text" id="position" name="position"
+                               placeholder="Название должности">
                     </div>
                 </div>
                 
@@ -473,9 +607,24 @@
 
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
-            // Инициализация счетчика символов
-            const textarea = document.getElementById('project_annotation');
-            updateCharCounter(textarea, 'annotation-counter');
+            // Инициализация счетчиков символов для всех textarea полей
+            const textareaFields = [
+                {id: 'project_annotation', counter: 'annotation-counter'},
+                {id: 'project_goal', counter: 'goal-counter'},
+                {id: 'project_tasks', counter: 'tasks-counter'},
+                {id: 'research_description', counter: 'research-counter'},
+                {id: 'scientific_methods_description', counter: 'methods-counter'},
+                {id: 'project_background_description', counter: 'background-counter'},
+                {id: 'expected_results', counter: 'results-counter'},
+                {id: 'content_of_work', counter: 'work-counter'}
+            ];
+            
+            textareaFields.forEach(field => {
+                const textarea = document.getElementById(field.id);
+                if (textarea) {
+                    updateCharCounter(textarea, field.counter);
+                }
+            });
             
             // Загружаем шаблон
             loadTemplate();
