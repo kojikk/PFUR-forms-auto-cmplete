@@ -185,9 +185,39 @@
             gap: 20px;
         }
         
+        .kpe-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 2fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        
+        .kpe-row h3 {
+            grid-column: 1 / -1;
+            margin: 0 0 15px 0;
+            color: #4CAF50;
+        }
+        
+        .category-a-only {
+            display: none;
+        }
+        
+        .category-a-only.show {
+            display: block;
+        }
+        
         @media (max-width: 768px) {
             .two-column {
                 grid-template-columns: 1fr;
+            }
+            
+            .kpe-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
             }
         }
     </style>
@@ -245,7 +275,7 @@
                         
                         <div class="form-group">
                             <label for="project_category">Категория проекта</label>
-                            <select id="project_category" name="project_category" required>
+                            <select id="project_category" name="project_category" required onchange="toggleCategoryAFields()">
                                 <option value="">Выберите категорию</option>
                                 <option value="А">А</option>
                                 <option value="Б">Б</option>
@@ -363,6 +393,164 @@
                         <label for="full_name_of_np">ФИО руководителя подразделения РУДН</label>
                         <input type="text" id="full_name_of_np" name="full_name_of_np"
                                placeholder="ФИО руководителя ОУП или НП (если известно)">
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>📊 КПЭ Форма 3 - Плановые ключевые показатели эффективности проекта</h2>
+                    
+                    <div class="form-group">
+                        <h3>📈 КПЭ-1: Публикация статей в журналах WoS/Scopus</h3>
+                        <div class="kpe-row">
+                            <div class="form-group">
+                                <label for="f3_1_1">1-й этап (статья)</label>
+                                <input type="number" id="f3_1_1" name="f3_1_1" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f3_1_2">2-й этап (статья)</label>
+                                <input type="number" id="f3_1_2" name="f3_1_2" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group category-a-only" id="f3_1_3_container">
+                                <label for="f3_1_3">3-й этап (статья) - только для категории А</label>
+                                <input type="number" id="f3_1_3" name="f3_1_3" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f3_1_4">Комментарий руководителя</label>
+                                <textarea id="f3_1_4" name="f3_1_4" placeholder="Комментарий к КПЭ-1"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h3>💰 КПЭ-2: Привлечение внешнего финансирования</h3>
+                        <div class="kpe-row">
+                            <div class="form-group">
+                                <label for="f3_2_1">1-й этап (тыс. руб.)</label>
+                                <input type="number" id="f3_2_1" name="f3_2_1" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f3_2_2">2-й этап (тыс. руб.)</label>
+                                <input type="number" id="f3_2_2" name="f3_2_2" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group category-a-only" id="f3_2_3_container">
+                                <label for="f3_2_3">3-й этап (тыс. руб.) - только для категории А</label>
+                                <input type="number" id="f3_2_3" name="f3_2_3" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f3_2_4">Комментарий руководителя</label>
+                                <textarea id="f3_2_4" name="f3_2_4" placeholder="Комментарий к КПЭ-2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h3>🌍 КПЭ-3: Апробация результатов НИР/НИОКР на международных НТМ</h3>
+                        <div class="kpe-row">
+                            <div class="form-group">
+                                <label for="f3_3_1">1-й этап (участие с публикацией)</label>
+                                <input type="number" id="f3_3_1" name="f3_3_1" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f3_3_2">2-й этап (участие с публикацией)</label>
+                                <input type="number" id="f3_3_2" name="f3_3_2" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group category-a-only" id="f3_3_3_container">
+                                <label for="f3_3_3">3-й этап (участие с публикацией) - только для категории А</label>
+                                <input type="number" id="f3_3_3" name="f3_3_3" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f3_3_4">Комментарий руководителя</label>
+                                <textarea id="f3_3_4" name="f3_3_4" placeholder="Комментарий к КПЭ-3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h3>📝 КПЭ-4: Подача заявки на регистрацию РИД</h3>
+                        <div class="kpe-row">
+                            <div class="form-group">
+                                <label for="f3_4_1">1-й этап (заявка на регистрацию)</label>
+                                <input type="number" id="f3_4_1" name="f3_4_1" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f3_4_2">2-й этап (заявка на регистрацию)</label>
+                                <input type="number" id="f3_4_2" name="f3_4_2" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group category-a-only" id="f3_4_3_container">
+                                <label for="f3_4_3">3-й этап (заявка на регистрацию) - только для категории А</label>
+                                <input type="number" id="f3_4_3" name="f3_4_3" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f3_4_4">Комментарий руководителя</label>
+                                <textarea id="f3_4_4" name="f3_4_4" placeholder="Комментарий к КПЭ-4"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h3>✅ КПЭ-5: Зарегистрированные РИД</h3>
+                        <div class="kpe-row">
+                            <div class="form-group">
+                                <label for="f3_5_1">1-й этап (регистрация РИД)</label>
+                                <input type="number" id="f3_5_1" name="f3_5_1" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f3_5_2">2-й этап (регистрация РИД)</label>
+                                <input type="number" id="f3_5_2" name="f3_5_2" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group category-a-only" id="f3_5_3_container">
+                                <label for="f3_5_3">3-й этап (регистрация РИД) - только для категории А</label>
+                                <input type="number" id="f3_5_3" name="f3_5_3" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f3_5_4">Комментарий руководителя</label>
+                                <textarea id="f3_5_4" name="f3_5_4" placeholder="Комментарий к КПЭ-5"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h3>🔄 КПЭ-6: Подготовка заявки на участие в следующем этапе Системы грантовой поддержки РУДН</h3>
+                        <div class="kpe-row">
+                            <div class="form-group">
+                                <label for="f3_6_1">1-й этап (заявка)</label>
+                                <input type="number" id="f3_6_1" name="f3_6_1" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f3_6_2">2-й этап (заявка)</label>
+                                <input type="number" id="f3_6_2" name="f3_6_2" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group category-a-only" id="f3_6_3_container">
+                                <label for="f3_6_3">3-й этап (заявка) - только для категории А</label>
+                                <input type="number" id="f3_6_3" name="f3_6_3" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f3_6_4">Комментарий руководителя</label>
+                                <textarea id="f3_6_4" name="f3_6_4" placeholder="Комментарий к КПЭ-6"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h3>👨‍🎓 КПЭ-7: Студенты и/или аспиранты в составе научного коллектива</h3>
+                        <div class="kpe-row">
+                            <div class="form-group">
+                                <label for="f3_7_1">1-й этап (чел.)</label>
+                                <input type="number" id="f3_7_1" name="f3_7_1" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f3_7_2">2-й этап (чел.)</label>
+                                <input type="number" id="f3_7_2" name="f3_7_2" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group category-a-only" id="f3_7_3_container">
+                                <label for="f3_7_3">3-й этап (чел.) - только для категории А</label>
+                                <input type="number" id="f3_7_3" name="f3_7_3" min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="f3_7_4">Комментарий руководителя</label>
+                                <textarea id="f3_7_4" name="f3_7_4" placeholder="Комментарий к КПЭ-7"></textarea>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -507,6 +695,22 @@
             }
         }
 
+        function toggleCategoryAFields() {
+            const categorySelect = document.getElementById('project_category');
+            const categoryAFields = document.querySelectorAll('.category-a-only');
+            
+            if (categorySelect.value === 'А') {
+                categoryAFields.forEach(field => field.classList.add('show'));
+            } else {
+                categoryAFields.forEach(field => {
+                    field.classList.remove('show');
+                    // Очищаем значения скрытых полей
+                    const input = field.querySelector('input, textarea');
+                    if (input) input.value = '';
+                });
+            }
+        }
+
         function formatDate(dateString) {
             const date = new Date(dateString);
             const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
@@ -561,6 +765,9 @@
                     if (element.name) {
                         if (element.name === 'date') {
                             formData[element.name] = formatDate(element.value);
+                        } else if (element.type === 'number') {
+                            // Для числовых полей КПЭ, если пусто - ставим 0
+                            formData[element.name] = element.value.trim() || '0';
                         } else {
                             formData[element.name] = element.value.trim();
                         }
@@ -628,6 +835,9 @@
             
             // Загружаем шаблон
             loadTemplate();
+            
+            // Инициализируем состояние полей категории А
+            toggleCategoryAFields();
         });
     </script>
 </body>
