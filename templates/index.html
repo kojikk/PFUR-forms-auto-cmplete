@@ -320,6 +320,98 @@
             font-size: 12px;
         }
         
+        /* Стили для расшифровки затрат */
+        .expense-category {
+            margin-bottom: 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .expense-category h3 {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            margin: 0;
+            padding: 15px 20px;
+            font-size: 16px;
+        }
+        
+        .expense-items {
+            padding: 20px;
+        }
+        
+        .expense-item {
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        
+        .expense-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 15px;
+            padding: 15px;
+            align-items: end;
+        }
+        
+        .expense-controls {
+            text-align: center;
+            padding: 0 20px 20px;
+        }
+        
+        .add-expense-item-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .add-expense-item-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+        
+        .remove-expense-item {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .remove-expense-item:hover {
+            background: #d32f2f;
+            transform: scale(1.1);
+        }
+        
+        .expense-totals {
+            background: #f1f8e9;
+            border-top: 1px solid #4CAF50;
+            padding: 20px;
+        }
+        
+        .totals-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 15px;
+            align-items: end;
+        }
+        
+        .totals-row .form-group span {
+            display: block;
+            text-align: center;
+            color: #666;
+        }
+        
         @media (max-width: 768px) {
             .two-column {
                 grid-template-columns: 1fr;
@@ -333,6 +425,15 @@
             .budget-row {
                 grid-template-columns: 1fr;
                 gap: 10px;
+            }
+            
+            .expense-row, .totals-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .expense-row .form-group:last-child {
+                text-align: center;
             }
             
             .button-container {
@@ -874,6 +975,245 @@
                 </div>
                 
                 <div class="section">
+                    <h2>📊 Расшифровка плановых затрат на 1-й этап</h2>
+                    <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+                        Детальная расшифровка всех категорий расходов с автоматическим подсчетом итогов по столбцам
+                    </p>
+                    
+                    <!-- 1. Оборудование -->
+                    <div class="expense-category">
+                        <h3>🔧 1. Закупка (модернизация) оборудования, материалов, комплектующих</h3>
+                        <div id="equipment-items" class="expense-items">
+                            <div class="expense-item" data-category="equipment" data-item="1">
+                                <div class="expense-row">
+                                    <div class="form-group">
+                                        <label>Наименование</label>
+                                        <input type="text" name="eq_1_name" placeholder="Название оборудования">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Количество</label>
+                                        <input type="number" name="eq_1_quantity" min="0" step="1" placeholder="1" oninput="calculateExpenseItem(this, 'equipment', 1)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Цена за ед. (тыс. руб.)</label>
+                                        <input type="number" name="eq_1_price" min="0" step="0.1" placeholder="0.0" oninput="calculateExpenseItem(this, 'equipment', 1)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Сумма (тыс. руб.)</label>
+                                        <input type="number" name="eq_1_sum" readonly class="readonly-field">
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" class="remove-expense-item" onclick="removeExpenseItem('equipment', 1)" title="Удалить позицию">✕</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="expense-controls">
+                            <button type="button" class="add-expense-item-btn" onclick="addExpenseItem('equipment')">
+                                ➕ Добавить позицию оборудования
+                            </button>
+                        </div>
+                        <div class="expense-totals">
+                            <div class="totals-row">
+                                <div class="form-group">
+                                    <label><strong>Итого:</strong></label>
+                                    <span>-</span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Количество</strong></label>
+                                    <input type="number" id="eq_total_quantity" name="eq_total_quantity" readonly class="readonly-field total-field">
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Средняя цена</strong></label>
+                                    <input type="number" id="eq_total_price" name="eq_total_price" readonly class="readonly-field total-field">
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Общая сумма</strong></label>
+                                    <input type="number" id="eq_total_sum" name="eq_total_sum" readonly class="readonly-field total-field">
+                                </div>
+                                <div class="form-group">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 2. Командировки -->
+                    <div class="expense-category">
+                        <h3>✈️ 2. Командировки членов научного коллектива</h3>
+                        <div id="travel-items" class="expense-items">
+                            <div class="expense-item" data-category="travel" data-item="1">
+                                <div class="expense-row">
+                                    <div class="form-group">
+                                        <label>Наименование</label>
+                                        <input type="text" name="tr_1_name" placeholder="Описание командировки">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Количество</label>
+                                        <input type="number" name="tr_1_quantity" min="0" step="1" placeholder="1" oninput="calculateExpenseItem(this, 'travel', 1)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Цена за ед. (тыс. руб.)</label>
+                                        <input type="number" name="tr_1_price" min="0" step="0.1" placeholder="0.0" oninput="calculateExpenseItem(this, 'travel', 1)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Сумма (тыс. руб.)</label>
+                                        <input type="number" name="tr_1_sum" readonly class="readonly-field">
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" class="remove-expense-item" onclick="removeExpenseItem('travel', 1)" title="Удалить позицию">✕</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="expense-controls">
+                            <button type="button" class="add-expense-item-btn" onclick="addExpenseItem('travel')">
+                                ➕ Добавить командировку
+                            </button>
+                        </div>
+                        <div class="expense-totals">
+                            <div class="totals-row">
+                                <div class="form-group">
+                                    <label><strong>Итого:</strong></label>
+                                    <span>-</span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Количество</strong></label>
+                                    <input type="number" id="tr_total_quantity" name="tr_total_quantity" readonly class="readonly-field total-field">
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Средняя цена</strong></label>
+                                    <input type="number" id="tr_total_price" name="tr_total_price" readonly class="readonly-field total-field">
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Общая сумма</strong></label>
+                                    <input type="number" id="tr_total_sum" name="tr_total_sum" readonly class="readonly-field total-field">
+                                </div>
+                                <div class="form-group">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 3. НТУ/услуги -->
+                    <div class="expense-category">
+                        <h3>🔬 3. Оплата НТУ / работ сторонних организаций</h3>
+                        <div id="services-items" class="expense-items">
+                            <div class="expense-item" data-category="services" data-item="1">
+                                <div class="expense-row">
+                                    <div class="form-group">
+                                        <label>Наименование</label>
+                                        <input type="text" name="sv_1_name" placeholder="Описание услуги">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Количество</label>
+                                        <input type="number" name="sv_1_quantity" min="0" step="1" placeholder="1" oninput="calculateExpenseItem(this, 'services', 1)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Цена за ед. (тыс. руб.)</label>
+                                        <input type="number" name="sv_1_price" min="0" step="0.1" placeholder="0.0" oninput="calculateExpenseItem(this, 'services', 1)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Сумма (тыс. руб.)</label>
+                                        <input type="number" name="sv_1_sum" readonly class="readonly-field">
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" class="remove-expense-item" onclick="removeExpenseItem('services', 1)" title="Удалить позицию">✕</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="expense-controls">
+                            <button type="button" class="add-expense-item-btn" onclick="addExpenseItem('services')">
+                                ➕ Добавить услугу
+                            </button>
+                        </div>
+                        <div class="expense-totals">
+                            <div class="totals-row">
+                                <div class="form-group">
+                                    <label><strong>Итого:</strong></label>
+                                    <span>-</span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Количество</strong></label>
+                                    <input type="number" id="sv_total_quantity" name="sv_total_quantity" readonly class="readonly-field total-field">
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Средняя цена</strong></label>
+                                    <input type="number" id="sv_total_price" name="sv_total_price" readonly class="readonly-field total-field">
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Общая сумма</strong></label>
+                                    <input type="number" id="sv_total_sum" name="sv_total_sum" readonly class="readonly-field total-field">
+                                </div>
+                                <div class="form-group">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 4. Прочие расходы -->
+                    <div class="expense-category">
+                        <h3>📋 4. Прочие расходы, непосредственно связанные с выполняемым проектом</h3>
+                        <div id="other-items" class="expense-items">
+                            <div class="expense-item" data-category="other" data-item="1">
+                                <div class="expense-row">
+                                    <div class="form-group">
+                                        <label>Наименование</label>
+                                        <input type="text" name="ot_1_name" placeholder="Описание расхода">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Количество</label>
+                                        <input type="number" name="ot_1_quantity" min="0" step="1" placeholder="1" oninput="calculateExpenseItem(this, 'other', 1)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Цена за ед. (тыс. руб.)</label>
+                                        <input type="number" name="ot_1_price" min="0" step="0.1" placeholder="0.0" oninput="calculateExpenseItem(this, 'other', 1)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Сумма (тыс. руб.)</label>
+                                        <input type="number" name="ot_1_sum" readonly class="readonly-field">
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" class="remove-expense-item" onclick="removeExpenseItem('other', 1)" title="Удалить позицию">✕</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="expense-controls">
+                            <button type="button" class="add-expense-item-btn" onclick="addExpenseItem('other')">
+                                ➕ Добавить прочий расход
+                            </button>
+                        </div>
+                        <div class="expense-totals">
+                            <div class="totals-row">
+                                <div class="form-group">
+                                    <label><strong>Итого:</strong></label>
+                                    <span>-</span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Количество</strong></label>
+                                    <input type="number" id="ot_total_quantity" name="ot_total_quantity" readonly class="readonly-field total-field">
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Средняя цена</strong></label>
+                                    <input type="number" id="ot_total_price" name="ot_total_price" readonly class="readonly-field total-field">
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Общая сумма</strong></label>
+                                    <input type="number" id="ot_total_sum" name="ot_total_sum" readonly class="readonly-field total-field">
+                                </div>
+                                <div class="form-group">
+                                    <span>-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
                     <h2>👥 Личные данные</h2>
                     
                     <div class="two-column">
@@ -1175,6 +1515,12 @@
                 fillKPEData();
                 fillBudgetData();
                 createTestTeam();
+                fillExpenseTestData();
+                
+                // Показываем информацию о плейсхолдерах команды
+                setTimeout(() => {
+                    showTeamPlaceholdersInfo();
+                }, 1000);
             }, 100);
         }
 
@@ -1261,26 +1607,298 @@
             // Заполняем зарплату руководителя
             document.getElementById('salary_1').value = '450.0';
             
-            // Добавляем тестовых членов команды
-            addTeamMember();
-            setTimeout(() => {
-                document.getElementById('student_2').value = 'Сидоров Сидор Сидорович, ведущий научный сотрудник, 0.5 ставки';
-                document.getElementById('salary_2').value = '200.0';
-                
-                addTeamMember();
-                setTimeout(() => {
-                    document.getElementById('student_3').value = 'Александров Александр Александрович, аспирант, 0.25 ставки';
-                    document.getElementById('salary_3').value = '100.0';
-                    
+            // Данные тестовых членов команды
+            const testTeamMembers = [
+                {
+                    name: 'Сидоров Сидор Сидорович, ведущий научный сотрудник, 0.5 ставки',
+                    salary: '200.0'
+                },
+                {
+                    name: 'Александров Александр Александрович, аспирант, 0.25 ставки',
+                    salary: '100.0'
+                },
+                {
+                    name: 'Николаева Наталья Николаевна, студент магистратуры, 0.1 ставки',
+                    salary: '50.0'
+                }
+            ];
+            
+            // Добавляем членов команды последовательно
+            let memberIndex = 0;
+            
+            function addNextMember() {
+                if (memberIndex < testTeamMembers.length) {
                     addTeamMember();
+                    
                     setTimeout(() => {
-                        document.getElementById('student_4').value = 'Николаева Наталья Николаевна, студент магистратуры, 0.1 ставки';
-                        document.getElementById('salary_4').value = '50.0';
+                        const memberNum = memberIndex + 2; // +2 потому что первый это руководитель
+                        const studentInput = document.getElementById(`student_${memberNum}`);
+                        const salaryInput = document.getElementById(`salary_${memberNum}`);
                         
+                        if (studentInput) {
+                            studentInput.value = testTeamMembers[memberIndex].name;
+                        }
+                        if (salaryInput) {
+                            salaryInput.value = testTeamMembers[memberIndex].salary;
+                        }
+                        
+                        memberIndex++;
+                        addNextMember(); // Рекурсивно добавляем следующего члена
+                    }, 100);
+                } else {
+                    // Все члены добавлены, пересчитываем итог
+                    setTimeout(() => {
                         calculateTeamTotal();
-                    }, 50);
-                }, 50);
-            }, 50);
+                        console.log('Тестовая команда создана:', {
+                            members: document.querySelectorAll('.team-member').length,
+                            totalBudget: document.getElementById('f4_sum').value
+                        });
+                    }, 100);
+                }
+            }
+            
+            addNextMember();
+        }
+
+        function fillExpenseTestData() {
+            // Тестовые данные для оборудования
+            const equipmentData = [
+                { name: 'GPU-сервер NVIDIA A100 80GB', quantity: '1', price: '2000.0' },
+                { name: 'Рабочие станции для разработки', quantity: '2', price: '400.0' },
+                { name: 'SSD накопители 2TB', quantity: '4', price: '50.0' }
+            ];
+
+            const travelData = [
+                { name: 'Командировка на конференцию ICML (США)', quantity: '2', price: '150.0' },
+                { name: 'Участие в конференции NeurIPS', quantity: '1', price: '200.0' }
+            ];
+
+            const servicesData = [
+                { name: 'Разработка специализированного ПО', quantity: '1', price: '300.0' },
+                { name: 'Консультации экспертов по ИИ', quantity: '10', price: '20.0' }
+            ];
+
+            const otherData = [
+                { name: 'Лицензии на программное обеспечение', quantity: '1', price: '100.0' },
+                { name: 'Облачные вычисления (AWS/Azure)', quantity: '12', price: '25.0' }
+            ];
+
+            // Заполняем оборудование
+            fillCategoryTestData('equipment', 'eq', equipmentData);
+            
+            // Заполняем командировки
+            fillCategoryTestData('travel', 'tr', travelData);
+            
+            // Заполняем услуги
+            fillCategoryTestData('services', 'sv', servicesData);
+            
+            // Заполняем прочие расходы
+            fillCategoryTestData('other', 'ot', otherData);
+            
+            // Пересчитываем все итоги
+            setTimeout(() => {
+                updateAllExpenseTotals();
+            }, 500);
+        }
+
+        function fillCategoryTestData(category, prefix, testData) {
+            testData.forEach((data, index) => {
+                if (index > 0) {
+                    // Добавляем новые элементы, если нужно
+                    addExpenseItem(category);
+                }
+                
+                setTimeout(() => {
+                    const itemNum = index + 1;
+                    const nameInput = document.querySelector(`input[name="${prefix}_${itemNum}_name"]`);
+                    const quantityInput = document.querySelector(`input[name="${prefix}_${itemNum}_quantity"]`);
+                    const priceInput = document.querySelector(`input[name="${prefix}_${itemNum}_price"]`);
+                    
+                    if (nameInput) nameInput.value = data.name;
+                    if (quantityInput) quantityInput.value = data.quantity;
+                    if (priceInput) priceInput.value = data.price;
+                    
+                    // Пересчитываем сумму
+                    if (quantityInput) {
+                        calculateExpenseItem(quantityInput, category, itemNum);
+                    }
+                }, 100 * (index + 1));
+            });
+        }
+
+        // Счетчики для каждой категории расходов
+        let expenseCounters = {
+            equipment: 1,
+            travel: 1,
+            services: 1,
+            other: 1
+        };
+
+        function calculateExpenseItem(input, category, itemNum) {
+            const quantityInput = document.querySelector(`input[name="${category === 'equipment' ? 'eq' : category === 'travel' ? 'tr' : category === 'services' ? 'sv' : 'ot'}_${itemNum}_quantity"]`);
+            const priceInput = document.querySelector(`input[name="${category === 'equipment' ? 'eq' : category === 'travel' ? 'tr' : category === 'services' ? 'sv' : 'ot'}_${itemNum}_price"]`);
+            const sumInput = document.querySelector(`input[name="${category === 'equipment' ? 'eq' : category === 'travel' ? 'tr' : category === 'services' ? 'sv' : 'ot'}_${itemNum}_sum"]`);
+            
+            if (quantityInput && priceInput && sumInput) {
+                const quantity = parseFloat(quantityInput.value) || 0;
+                const price = parseFloat(priceInput.value) || 0;
+                const sum = quantity * price;
+                
+                sumInput.value = sum.toFixed(1);
+                
+                // Пересчитываем итоги категории
+                calculateCategoryTotals(category);
+            }
+        }
+
+        function addExpenseItem(category) {
+            expenseCounters[category]++;
+            const itemNum = expenseCounters[category];
+            const container = document.getElementById(`${category}-items`);
+            const prefix = category === 'equipment' ? 'eq' : category === 'travel' ? 'tr' : category === 'services' ? 'sv' : 'ot';
+            
+            const placeholders = {
+                equipment: 'Название оборудования',
+                travel: 'Описание командировки',
+                services: 'Описание услуги',
+                other: 'Описание расхода'
+            };
+            
+            const newItem = document.createElement('div');
+            newItem.className = 'expense-item';
+            newItem.setAttribute('data-category', category);
+            newItem.setAttribute('data-item', itemNum);
+            
+            newItem.innerHTML = `
+                <div class="expense-row">
+                    <div class="form-group">
+                        <label>Наименование</label>
+                        <input type="text" name="${prefix}_${itemNum}_name" placeholder="${placeholders[category]}">
+                    </div>
+                    <div class="form-group">
+                        <label>Количество</label>
+                        <input type="number" name="${prefix}_${itemNum}_quantity" min="0" step="1" placeholder="1" oninput="calculateExpenseItem(this, '${category}', ${itemNum})">
+                    </div>
+                    <div class="form-group">
+                        <label>Цена за ед. (тыс. руб.)</label>
+                        <input type="number" name="${prefix}_${itemNum}_price" min="0" step="0.1" placeholder="0.0" oninput="calculateExpenseItem(this, '${category}', ${itemNum})">
+                    </div>
+                    <div class="form-group">
+                        <label>Сумма (тыс. руб.)</label>
+                        <input type="number" name="${prefix}_${itemNum}_sum" readonly class="readonly-field">
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="remove-expense-item" onclick="removeExpenseItem('${category}', ${itemNum})" title="Удалить позицию">✕</button>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(newItem);
+        }
+
+        function removeExpenseItem(category, itemNum) {
+            const item = document.querySelector(`[data-category="${category}"][data-item="${itemNum}"]`);
+            if (item) {
+                item.remove();
+                calculateCategoryTotals(category);
+            }
+        }
+
+        function calculateCategoryTotals(category) {
+            const prefix = category === 'equipment' ? 'eq' : category === 'travel' ? 'tr' : category === 'services' ? 'sv' : 'ot';
+            const items = document.querySelectorAll(`[data-category="${category}"]`);
+            
+            let totalQuantity = 0;
+            let totalSum = 0;
+            let totalPriceWeighted = 0;
+            let itemCount = 0;
+            
+            items.forEach(item => {
+                const itemNum = item.getAttribute('data-item');
+                const quantityInput = item.querySelector(`input[name="${prefix}_${itemNum}_quantity"]`);
+                const priceInput = item.querySelector(`input[name="${prefix}_${itemNum}_price"]`);
+                const sumInput = item.querySelector(`input[name="${prefix}_${itemNum}_sum"]`);
+                
+                if (quantityInput && priceInput && sumInput) {
+                    const quantity = parseFloat(quantityInput.value) || 0;
+                    const price = parseFloat(priceInput.value) || 0;
+                    const sum = parseFloat(sumInput.value) || 0;
+                    
+                    if (quantity > 0) {
+                        totalQuantity += quantity;
+                        totalSum += sum;
+                        totalPriceWeighted += price * quantity;
+                        itemCount++;
+                    }
+                }
+            });
+            
+            // Обновляем итоги
+            const totalQuantityField = document.getElementById(`${prefix}_total_quantity`);
+            const totalPriceField = document.getElementById(`${prefix}_total_price`);
+            const totalSumField = document.getElementById(`${prefix}_total_sum`);
+            
+            if (totalQuantityField) totalQuantityField.value = totalQuantity.toFixed(0);
+            if (totalSumField) totalSumField.value = totalSum.toFixed(1);
+            
+            // Средняя цена = общая стоимость / общее количество
+            const avgPrice = totalQuantity > 0 ? totalSum / totalQuantity : 0;
+            if (totalPriceField) totalPriceField.value = avgPrice.toFixed(1);
+        }
+
+        function updateAllExpenseTotals() {
+            calculateCategoryTotals('equipment');
+            calculateCategoryTotals('travel');
+            calculateCategoryTotals('services');
+            calculateCategoryTotals('other');
+        }
+
+        function showTeamPlaceholdersInfo() {
+            const teamMembers = document.querySelectorAll('.team-member');
+            const placeholdersList = [];
+            const teamMembersArray = [];
+            
+            teamMembers.forEach((member, index) => {
+                const memberNum = index + 1;
+                const studentInput = member.querySelector(`input[name="student_${memberNum}"]`);
+                const salaryInput = member.querySelector(`input[name="salary_${memberNum}"]`);
+                
+                const studentValue = memberNum === 1 ? 
+                    document.getElementById('head_of_project').value + ', руководитель проекта, 1.0 ставки' :
+                    (studentInput ? studentInput.value : '');
+                const salaryValue = salaryInput ? salaryInput.value : '0';
+                
+                if (studentValue) {
+                    placeholdersList.push({
+                        student: `{student_${memberNum}}`,
+                        studentValue: studentValue,
+                        salary: `{salary_${memberNum}}`,
+                        salaryValue: salaryValue
+                    });
+                    
+                    teamMembersArray.push({
+                        number: memberNum,
+                        name: studentValue,
+                        salary: salaryValue
+                    });
+                }
+            });
+            
+            console.log('📋 Созданные плейсхолдеры команды (отдельные):');
+            console.table(placeholdersList);
+            
+            console.log('🔄 Массив team_members для цикла docxtemplater:');
+            console.table(teamMembersArray);
+            
+            console.log('📝 Как использовать в Word шаблоне:');
+            console.log('Для цикла используйте: {' + '#team_members}{number}. {name} | {salary}{/team_members}');
+            console.log('Для итого: {' + 'f4_sum}');
+            
+            showMessage('success', 
+                `✅ Тестовые данные загружены! Создано ${teamMembers.length} членов команды. ` +
+                `Доступен массив team_members для циклов в docxtemplater. ` +
+                `Проверьте консоль браузера (F12) для инструкций по Word шаблону.`
+            );
         }
 
         function formatDate(dateString) {
@@ -1346,25 +1964,130 @@
                     }
                 });
 
-                // Добавляем динамически созданные поля команды
+                // Создаем структуру данных для цикла в таблице команды
                 const teamMembers = document.querySelectorAll('.team-member');
+                const teamMembersArray = [];
+                
                 teamMembers.forEach((member, index) => {
                     const memberNum = index + 1;
                     const studentInput = member.querySelector(`input[name="student_${memberNum}"]`);
+                    const salaryInput = member.querySelector(`input[name="salary_${memberNum}"]`);
+                    
+                    let memberName = '';
+                    let memberSalary = '0';
                     
                     if (memberNum === 1) {
                         // Для первого члена (руководитель) используем данные из основной формы
                         const headOfProject = document.getElementById('head_of_project').value.trim();
-                        formData[`student_${memberNum}`] = headOfProject + ', руководитель проекта, 1.0 ставки';
+                        memberName = headOfProject + ', руководитель проекта, 1.0 ставки';
                     } else if (studentInput && studentInput.value.trim()) {
-                        formData[`student_${memberNum}`] = studentInput.value.trim();
+                        memberName = studentInput.value.trim();
                     }
                     
-                    // Для placeholder {student_n} - берем последнего добавленного члена команды
-                    if (memberNum === teamMembers.length && memberNum > 1) {
-                        formData['student_n'] = studentInput ? studentInput.value.trim() : '';
-                        const salaryInput = member.querySelector(`input[name="salary_${memberNum}"]`);
-                        formData['salary_n'] = salaryInput ? (salaryInput.value.trim() || '0') : '0';
+                    if (salaryInput && salaryInput.value.trim()) {
+                        memberSalary = salaryInput.value.trim();
+                    }
+                    
+                    // Добавляем в массив только если есть данные
+                    if (memberName) {
+                        teamMembersArray.push({
+                            number: memberNum,
+                            name: memberName,
+                            salary: memberSalary
+                        });
+                        
+                        // Создаем отдельные плейсхолдеры для обратной совместимости
+                        formData[`student_${memberNum}`] = memberName;
+                        formData[`salary_${memberNum}`] = memberSalary;
+                    }
+                });
+                
+                // Создаем массив для цикла docxtemplater
+                formData['team_members'] = teamMembersArray;
+                formData['team_count'] = teamMembersArray.length;
+                
+                // Для обратной совместимости с {student_n} и {salary_n}
+                if (teamMembersArray.length > 0) {
+                    const lastMember = teamMembersArray[teamMembersArray.length - 1];
+                    formData['student_n'] = lastMember.name;
+                    formData['salary_n'] = lastMember.salary;
+                    formData['n'] = lastMember.number.toString();
+                } else {
+                    formData['student_n'] = '';
+                    formData['salary_n'] = '0';
+                    formData['n'] = '1';
+                }
+                
+                // Добавляем пустые плейсхолдеры для неиспользуемых позиций (до 10)
+                for (let i = teamMembersArray.length + 1; i <= 10; i++) {
+                    formData[`student_${i}`] = '';
+                    formData[`salary_${i}`] = '0';
+                }
+
+                // Создаем массивы для расшифровки затрат
+                const expenseCategories = [
+                    { name: 'equipment', prefix: 'eq' },
+                    { name: 'travel', prefix: 'tr' },
+                    { name: 'services', prefix: 'sv' },
+                    { name: 'other', prefix: 'ot' }
+                ];
+
+                expenseCategories.forEach(category => {
+                    const items = document.querySelectorAll(`[data-category="${category.name}"]`);
+                    const categoryArray = [];
+                    let totalQuantity = 0;
+                    let totalSum = 0;
+                    
+                    items.forEach(item => {
+                        const itemNum = item.getAttribute('data-item');
+                        const nameInput = item.querySelector(`input[name="${category.prefix}_${itemNum}_name"]`);
+                        const quantityInput = item.querySelector(`input[name="${category.prefix}_${itemNum}_quantity"]`);
+                        const priceInput = item.querySelector(`input[name="${category.prefix}_${itemNum}_price"]`);
+                        const sumInput = item.querySelector(`input[name="${category.prefix}_${itemNum}_sum"]`);
+                        
+                        const name = nameInput ? nameInput.value.trim() : '';
+                        const quantity = quantityInput ? (parseFloat(quantityInput.value) || 0) : 0;
+                        const price = priceInput ? (parseFloat(priceInput.value) || 0) : 0;
+                        const sum = sumInput ? (parseFloat(sumInput.value) || 0) : 0;
+                        
+                        // Добавляем в массив только если есть данные
+                        if (name || quantity > 0 || price > 0) {
+                            categoryArray.push({
+                                [`${category.prefix}_number`]: parseInt(itemNum),
+                                [`${category.prefix}_name`]: name,
+                                [`${category.prefix}_quantity`]: quantity.toString(),
+                                [`${category.prefix}_price`]: price.toFixed(1),
+                                [`${category.prefix}_sum`]: sum.toFixed(1)
+                            });
+                            
+                            totalQuantity += quantity;
+                            totalSum += sum;
+                        }
+                        
+                        // Создаем отдельные плейсхолдеры для обратной совместимости
+                        formData[`${category.prefix}_${itemNum}_name`] = name;
+                        formData[`${category.prefix}_${itemNum}_quantity`] = quantity.toString();
+                        formData[`${category.prefix}_${itemNum}_price`] = price.toFixed(1);
+                        formData[`${category.prefix}_${itemNum}_sum`] = sum.toFixed(1);
+                    });
+                    
+                    // Создаем массив для цикла docxtemplater
+                    formData[`${category.name}_items`] = categoryArray;
+                    
+                    // Итоги по категории
+                    formData[`${category.prefix}_total_quantity`] = totalQuantity.toString();
+                    formData[`${category.prefix}_total_sum`] = totalSum.toFixed(1);
+                    
+                    // Средняя цена
+                    const avgPrice = totalQuantity > 0 ? totalSum / totalQuantity : 0;
+                    formData[`${category.prefix}_total_price`] = avgPrice.toFixed(1);
+                    
+                    // Добавляем пустые плейсхолдеры для неиспользуемых позиций (до 10)
+                    for (let i = items.length + 1; i <= 10; i++) {
+                        formData[`${category.prefix}_${i}_name`] = '';
+                        formData[`${category.prefix}_${i}_quantity`] = '0';
+                        formData[`${category.prefix}_${i}_price`] = '0.0';
+                        formData[`${category.prefix}_${i}_sum`] = '0.0';
                     }
                 });
 
@@ -1436,6 +2159,9 @@
             // Инициализируем подсчеты бюджета
             calculateBudgetTotals();
             calculateTeamTotal();
+            
+            // Инициализируем расчеты расшифровки затрат  
+            updateAllExpenseTotals();
         });
     </script>
 </body>
